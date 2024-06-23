@@ -1,4 +1,5 @@
 import { useContext, useRef, useState } from "react";
+import clsx from "clsx";
 import { CalendarContext } from "../GoogleCloneApp";
 import PortalComponent from "./PortalComponent";
 
@@ -26,10 +27,14 @@ const Modal = (props: EventType) => {
   const [allDay, setAllDay] = useState<boolean>(isAddEventType ? false : props.allDay);
   const [startTime, setStartTime] = useState<string>(isAddEventType ? "" : props.startTime);
   const [endTime, setEndTime] = useState<string>(isAddEventType ? "" : props.endTime);
+  const [isClosingAnimation, setIsClosingAnimation] = useState<boolean>(false);
   const formNameRef = useRef<string>(isAddEventType ? "" : props.name);
   const formColorRef = useRef<string>(isAddEventType ? "" : props.color);
   const modalName = isAddEventType ? "Add Event" : "Edit Event";
   const buttonName = isAddEventType ? "Add" : "Save";
+  const modalClasses = clsx("modal", {
+    closing: isClosingAnimation,
+  });
   const handleSetAllDay = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAllDay(e.target.checked);
     setStartTime("");
@@ -58,10 +63,14 @@ const Modal = (props: EventType) => {
     handleCloseAddEventModal();
   };
   const handleCloseAddEventModal = () => {
-    setShowModal(false);
-    setAllDay(false);
-    setStartTime("");
-    setEndTime("");
+    setIsClosingAnimation(true);
+    setTimeout(() => {
+      setShowModal(false);
+      setAllDay(false);
+      setStartTime("");
+      setEndTime("");
+      setIsClosingAnimation(false);
+    }, 250);
   };
   const handleDeleteEvent = () => {
     if (isAddEventType) return;
@@ -70,7 +79,7 @@ const Modal = (props: EventType) => {
   };
   return (
     <PortalComponent>
-      <div className="modal">
+      <div className={modalClasses}>
         <div className="overlay" onClick={handleCloseAddEventModal}></div>
         <div className="modal-body">
           <div className="modal-title">
